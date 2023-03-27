@@ -43,7 +43,7 @@ while i <= n_max
     xArr(i) = x;
     yArr(i) = y;
     rArr(i) = r;
-    PArr(i) = pi * r^2;
+    PArr(i) = pi * r * r;
     lArr(i) = los;
     plot_circle(x,y,r);
     pause(0.01);
@@ -56,6 +56,7 @@ plot(1:n_max,cumsum(PArr));
 title("powierzchnia całkowita kół")
 xlabel("liczba narysowanych okregow");
 ylabel("powierzchnia");
+print -dpng zadanie1a
 
 figure;
 i=1;
@@ -68,3 +69,4 @@ plot(1:n_max, cumsum(lArr));
 title("średnia liczba losowań")
 xlabel("liczba narysowanych okregow");
 ylabel("liczba losowań");
+print -dpng zadanie1b
