@@ -13,15 +13,20 @@ def sell(capital, actions, price):
 def buy(capital, price):
     actions = capital / price
     capital -= actions * price
-    print(f"buying for {price} with {actions} actions")
+    print(f"buying for {price}: {round(actions, 2)} actions")
     return round(capital, 2), round(actions, 2)
 
 
-def decide(shorterMacd):
-    macdAbove = False
+def decide():
+    if macd[0] > signal[0]:
+        macdAbove = True
+    else:
+        macdAbove = False
     capital = 1000
     actions = 0
-    for i, m, s in zip(range(len(shorterMacd)), shorterMacd, signal):
+    print(range(len(macd) + 35)[35:])
+    for i, m, s in zip(range(len(macd) + 35)[35:], macd, signal):
+        print(f"{i} week, day is {data.Date[i]}")
         if m > s and macdAbove == False:
             capital, actions = buy(capital, prices[i])
             macdAbove = True
@@ -37,35 +42,38 @@ def alfa(n):
 def ema(n, list):
     a = alfa(n)
     emaList = []
-    for i in range(n, len(list)):  # dla każdego elementu listy (od n) wylicz średnią kroczącą (do n danych wstecz)
+    for i in range(n, len(list)):
         x = 0
         y = 0
-        for k in range(0, n):
+        for k in range(0, n + 1):
             x += list[i - k] * pow(1 - a, k)
-        for k in range(0, n):
+        for k in range(0, n + 1):
             y += pow(1 - a, k)
 
         emaList.append(x / y)
     return emaList
 
 
-data = pan.read_csv("a.csv")
-prices = round(data.Close, 2)
+data = pan.read_csv("11B.WA.csv")
+prices = round(data.High, 2)
+prices = prices.tolist()
 ema12 = ema(12, prices)
 ema26 = ema(26, prices)
 macd = []
 signal = []
-start = 32
 for j in range(0, len(ema26)):
-    macd.append(ema12[j] - ema26[j])  # 26 and 12 days
+    macd.append(ema12[j] - ema26[j])
 
 signal = ema(9, macd)
 
-decide(macd[9:])
+macd = macd[9:]  # 603 = 638 (full) - 35 (signalstart)
+# prices = prices[26 + 9:]
+
+decide()
 
 figure, axes = plt.subplots()
-axes.plot(data.Date, prices, color='b', label='INPUT')
-axes.plot(data.Date[26:], macd, color='r', label='MACD')
+axes.plot(data.Date[26 + 9:], prices[26 + 9:], color='b', label='INPUT (High)')
+axes.plot(data.Date[26 + 9:], macd, color='r', label='MACD')
 axes.plot(data.Date[26 + 9:], signal, color='g', label='SIGNAL')
 
 locator = mdates.AutoDateLocator()
