@@ -3,18 +3,31 @@ import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 
 
-def sell():
-    print("SOOOLD")
+def sell(capital, actions, price):
+    capital += actions * price
+    actions = 0
+    print(f"selling for {price}, results in {round(capital, 2)}")
+    return round(capital, 2), actions
 
 
-def buy():
-    print("And its yours!")
+def buy(capital, price):
+    actions = capital / price
+    capital -= actions * price
+    print(f"buying for {price} with {actions} actions")
+    return round(capital, 2), round(actions, 2)
 
 
 def decide(shorterMacd):
-    for m, s in zip(shorterMacd, signal):
-        if m > s:
-            print("MACD GÓRĄ")
+    macdAbove = False
+    capital = 1000
+    actions = 0
+    for i, m, s in zip(range(len(shorterMacd)), shorterMacd, signal):
+        if m > s and macdAbove == False:
+            capital, actions = buy(capital, prices[i])
+            macdAbove = True
+        if m < s and macdAbove == True:
+            capital, actions = sell(capital, actions, prices[i])
+            macdAbove = False
 
 
 def alfa(n):
@@ -36,9 +49,10 @@ def ema(n, list):
     return emaList
 
 
-data = pan.read_csv("11B.WA.csv")
-ema12 = ema(12, data.High)
-ema26 = ema(26, data.High)
+data = pan.read_csv("a.csv")
+prices = round(data.Close, 2)
+ema12 = ema(12, prices)
+ema26 = ema(26, prices)
 macd = []
 signal = []
 start = 32
@@ -50,7 +64,7 @@ signal = ema(9, macd)
 decide(macd[9:])
 
 figure, axes = plt.subplots()
-axes.plot(data.Date, data.High, color='b', label='INPUT')
+axes.plot(data.Date, prices, color='b', label='INPUT')
 axes.plot(data.Date[26:], macd, color='r', label='MACD')
 axes.plot(data.Date[26 + 9:], signal, color='g', label='SIGNAL')
 
