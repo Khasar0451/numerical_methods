@@ -3,14 +3,18 @@ import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 
 
-def sell
+def sell():
+    print("SOOOLD")
 
 
-def buy
+def buy():
+    print("And its yours!")
 
 
-def decide
-
+def decide(shorterMacd):
+    for m, s in zip(shorterMacd, signal):
+        if m > s:
+            print("MACD GÓRĄ")
 
 
 def alfa(n):
@@ -43,12 +47,12 @@ for j in range(0, len(ema26)):
 
 signal = ema(9, macd)
 
-print(data.Date)
+decide(macd[9:])
 
 figure, axes = plt.subplots()
+axes.plot(data.Date, data.High, color='b', label='INPUT')
 axes.plot(data.Date[26:], macd, color='r', label='MACD')
 axes.plot(data.Date[26 + 9:], signal, color='g', label='SIGNAL')
-axes.plot(data.Date[26:], data.High[26:], color='b', label='INPUT')
 
 locator = mdates.AutoDateLocator()
 axes.xaxis.set_major_locator(locator)
