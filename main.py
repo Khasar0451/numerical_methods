@@ -26,11 +26,12 @@ def decide():
     actions = 0
     print(range(len(macd) + 35)[35:])
     for i, m, s in zip(range(len(macd) + 35)[35:], macd, signal):
-        print(f"{i} week, day is {data.Date[i]}")
-        if m > s and macdAbove == False:
+        if m > s and macdAbove is False:
+            print(f"{i} week, day is {data.Date[i]}     ", end='')
             capital, actions = buy(capital, prices[i])
             macdAbove = True
-        if m < s and macdAbove == True:
+        if m < s and macdAbove is True:
+            print(f"{i} week, day is {data.Date[i]}     ", end='')
             capital, actions = sell(capital, actions, prices[i])
             macdAbove = False
 
@@ -66,8 +67,7 @@ for j in range(0, len(ema26)):
 
 signal = ema(9, macd)
 
-macd = macd[9:]  # 603 = 638 (full) - 35 (signalstart)
-# prices = prices[26 + 9:]
+macd = macd[9:]
 
 decide()
 
@@ -79,6 +79,9 @@ axes.plot(data.Date[26 + 9:], signal, color='g', label='SIGNAL')
 locator = mdates.AutoDateLocator()
 axes.xaxis.set_major_locator(locator)
 axes.tick_params(axis="x", rotation=-15)
+axes.set_xlabel("Data")
+axes.set_ylabel("Wartość wyznacznika")
+axes.set_title("Wyznacznik MACD")
 
 plt.legend()
 plt.show()
