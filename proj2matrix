@@ -1,25 +1,49 @@
+import math
+
+
 class SquareMatrix:
     def __init__(self, size):
-        self.mat = [[]]
         self.N = size
-        self.row = 0
+        self.mat = []
+        for _ in range(self.N):
+            self.mat.append([])
+        self.row = 0  # raczej niepotrzebne pole
         self.col = 0
 
-    def matAppend(self, num):
-        if self.col == self.N:
-            self.row += 1
-            self.col = 0
+    def matAddMat(self, mat2: 'SquareMatrix') -> 'SquareMatrix':  # '  ' -> forward reference, class doesn't exist yet
+        newMat = SquareMatrix(self.N)
+        for row in range(self.N):
+            newMat.mat[row] += ([sum(val) for val in zip(self.mat[row], mat2.mat[row])])
+        return newMat
 
-        self.mat[self.row].append(num)
-        self.col += 1
+    def matMulVec(self, vec):
+        newVec = []
+        for row in range(self.N):
+            num = 0
+            for col in range(self.N):
+                num += self.mat[row][col] * vec[row]
+            newVec.append(num)
+        return newVec
+
+    # def matAppend(self, num):
+    #     if self.col == self.N:
+    #         self.row += 1
+    #         self.col = 0
+    #
+    #     # ta funkcje chyba trzeba wywalic
+    #
+    #     self.mat[self.row].append(num)  # [self.col].append(num)
+    #     self.col += 1
 
     def matPrint(self):
         for row in range(self.N):
-            for col in range(self.N):
-                print(self.mat[row][col] + " ")
-                col += 1
-            row += 1
+            print(*self.mat[row])  # * -> print whole array in one line
             print()
+
+    def matTestCreate(self):
+        for row in range(self.N):
+            for col in range(self.N):
+                self.mat[row].append(2)
 
     def matBandCreate(self):
         a1 = 5 + 7
@@ -31,19 +55,45 @@ class SquareMatrix:
         width = len(band)
 
         for row in range(self.N):
+            zeroStart = math.ceil(width / 2) + row
+            zeroEnd = -math.ceil(width / 2) + row
             for col in range(self.N):
 
-                num = band[current]
-                if current >= width:
+                if col >= zeroStart or col <= zeroEnd:
                     num = 0
+                else:
+                    num = band[current]
+                    current += 1
+                # self.matAppend(num)
+                self.mat[row].append(num)
 
-                current += 1
-                self.matAppend(num)
-
-            current = 0
-            # sprawdz czy w dobrych miejscach zerujesz
+            if start > 0:
+                start -= 1
+            current = start
 
 
 N = 9 * 2 * 5
+#
+# s = SquareMatrix(N)
+# s.matBandCreate()
+# s.matPrint()
+# d = SquareMatrix(N)
+# d.matBandCreate()
+# s = s.matAddMat(d)
+# s.matPrint()
+test = SquareMatrix(N)
+test.matTestCreate()
+test.matPrint()
 
-s = SquareMatrix(N)
+tvec = []
+for i in range(N):
+    tvec.append(10)
+
+v = test.matMulVec(tvec)
+print(v)
+
+b = []
+# for i in range(N):
+#   b.append(math.sin(i * (8 + 1)))
+
+# print(b)
