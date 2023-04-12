@@ -11,10 +11,10 @@ class SquareMatrix:
         self.col = 0
 
     def matAddMat(self, mat2: 'SquareMatrix') -> 'SquareMatrix':  # '  ' -> forward reference, class doesn't exist yet
-        newMat = SquareMatrix(self.N)
+        # newMat = SquareMatrix(self.N)
         for row in range(self.N):
-            newMat.mat[row] += ([sum(val) for val in zip(self.mat[row], mat2.mat[row])])
-        return newMat
+            #     newMat.mat[row] += ([sum(val) for val in zip(self.mat[row], mat2.mat[row])])
+            self.mat[row] = ([sum(val) for val in zip(self.mat[row], mat2.mat[row])])
 
     def matMulVec(self, vec):
         newVec = []
@@ -28,16 +28,6 @@ class SquareMatrix:
     def matMulScalar(self, scalar):
         for row in range(self.N):
             self.mat[row] = (val * scalar for val in self.mat[row])
-
-    # def matAppend(self, num):
-    #     if self.col == self.N:
-    #         self.row += 1
-    #         self.col = 0
-    #
-    #     # ta funkcje chyba trzeba wywalic
-    #
-    #     self.mat[self.row].append(num)  # [self.col].append(num)
-    #     self.col += 1
 
     def matTrUpper(self):
         newMat = SquareMatrix(self.N)
@@ -55,12 +45,11 @@ class SquareMatrix:
         for row in range(self.N):
             newMat.mat.append([])
             for col in range(self.N):
-                if self.N - row < col:
+                if row < col:
                     newMat.mat[row].append(0)
                 else:
                     newMat.mat[row].append(self.mat[row][col])
         return newMat
-
 
     def matPrint(self):
         for row in range(self.N):
@@ -70,7 +59,7 @@ class SquareMatrix:
     def matTestCreate(self):
         for row in range(self.N):
             for col in range(self.N):
-                self.mat[row].append(2)
+                self.mat[row].append(1)
 
     def matBandCreate(self):
         a1 = 5 + 7
@@ -110,17 +99,18 @@ N = 9 * 2 * 5
 # s.matPrint()
 test = SquareMatrix(N)
 test.matTestCreate()
-test = test.matTrUpper()
-test.matPrint()
+# test = test.matTrUpper()
+# test.matPrint()
 
-test.matTestCreate()
+# test.matTestCreate()test.matPrint()
+# test.matPrint()
+
 test = test.matTrLower()
 test.matPrint()
 
-
-#test = test.matAddMat(test)
-#test.matMulScalar(2)
-#test.matPrint()
+# test = test.matAddMat(test)
+# test.matMulScalar(2)
+# test.matPrint()
 tvec = []
 for i in range(N):
     tvec.append(10)
