@@ -51,6 +51,29 @@ class SquareMatrix:
                     newMat.mat[row].append(self.mat[row][col])
         return newMat
 
+    def matDiagonal(self):
+        newMat = SquareMatrix(self.N)
+        for row in range(self.N):
+            newMat.mat.append([])
+            for col in range(self.N):
+                if row != col:
+                    newMat.mat[row].append(0)
+                else:
+                    newMat.mat[row].append(self.mat[row][col])
+        return newMat
+
+    def forwardSub(self, b):
+        x = [0] * self.N
+        for row in range(self.N):
+            aSum = 0
+            for col in range(row):  # +1 ?
+                # col = 0
+                # while col < row:
+                aSum += self.mat[row][col] * x[col]
+            x[row] = (b[row] - aSum) / self.mat[row][row]
+
+        return x
+
     def matPrint(self):
         for row in range(self.N):
             print(*self.mat[row])  # * -> print whole array in one line
@@ -88,6 +111,9 @@ class SquareMatrix:
             current = start
 
 
+# czasem macierz jest 2x wieksza (puste elementy)
+
+
 N = 9 * 2 * 5
 #
 # s = SquareMatrix(N)
@@ -105,7 +131,8 @@ test.matTestCreate()
 # test.matTestCreate()test.matPrint()
 # test.matPrint()
 
-test = test.matTrLower()
+# test = test.matTrLower()
+test = test.matDiagonal()
 test.matPrint()
 
 # test = test.matAddMat(test)
@@ -113,10 +140,11 @@ test.matPrint()
 # test.matPrint()
 tvec = []
 for i in range(N):
-    tvec.append(10)
-
-v = test.matMulVec(tvec)
+    tvec.append(2)
+v = test.forwardSub(tvec)
 print(v)
+# v = test.matMulVec(tvec)
+# print(v)
 
 b = []
 # for i in range(N):
