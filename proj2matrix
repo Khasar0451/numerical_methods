@@ -25,6 +25,10 @@ class SquareMatrix:
             newVec.append(num)
         return newVec
 
+    def matMulScalar(self, scalar):
+        for row in range(self.N):
+            self.mat[row] = (val * scalar for val in self.mat[row])
+
     # def matAppend(self, num):
     #     if self.col == self.N:
     #         self.row += 1
@@ -84,7 +88,9 @@ N = 9 * 2 * 5
 test = SquareMatrix(N)
 test.matTestCreate()
 test.matPrint()
-
+test = test.matAddMat(test)
+test.matMulScalar(2)
+test.matPrint()
 tvec = []
 for i in range(N):
     tvec.append(10)
