@@ -39,6 +39,29 @@ class SquareMatrix:
     #     self.mat[self.row].append(num)  # [self.col].append(num)
     #     self.col += 1
 
+    def matTrUpper(self):
+        newMat = SquareMatrix(self.N)
+        for row in range(self.N):
+            newMat.mat.append([])
+            for col in range(self.N):
+                if row > col:
+                    newMat.mat[row].append(0)
+                else:
+                    newMat.mat[row].append(self.mat[row][col])
+        return newMat
+
+    def matTrLower(self):
+        newMat = SquareMatrix(self.N)
+        for row in range(self.N):
+            newMat.mat.append([])
+            for col in range(self.N):
+                if self.N - row < col:
+                    newMat.mat[row].append(0)
+                else:
+                    newMat.mat[row].append(self.mat[row][col])
+        return newMat
+
+
     def matPrint(self):
         for row in range(self.N):
             print(*self.mat[row])  # * -> print whole array in one line
@@ -87,10 +110,17 @@ N = 9 * 2 * 5
 # s.matPrint()
 test = SquareMatrix(N)
 test.matTestCreate()
+test = test.matTrUpper()
 test.matPrint()
-test = test.matAddMat(test)
-test.matMulScalar(2)
+
+test.matTestCreate()
+test = test.matTrLower()
 test.matPrint()
+
+
+#test = test.matAddMat(test)
+#test.matMulScalar(2)
+#test.matPrint()
 tvec = []
 for i in range(N):
     tvec.append(10)
