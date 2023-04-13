@@ -1,4 +1,5 @@
 import math
+import time
 
 
 class SquareMatrix:
@@ -92,12 +93,57 @@ class SquareMatrix:
         db = d.forwardSub(b)
 
         res = self.normedRes(r, b)
+        errorRes = res ** 30
         maxRes = 10 ** -9  # pow(10, -9)
+        iterations = 0
+        start = time.time()
         while res > maxRes:
+            iterations += 1
             lur = lu.matMulVec(r)
             dlur = minusD.forwardSub(lur)
+            #dlur = d.forwardSub(lur)
+            #dlur = [x * -1 for x in dlur]
             r = dlur + db
             res = self.normedRes(r, b)
+            if res >= errorRes:
+                print("Norma bledu rezydualnego prawdopodobnie nie zbiega")
+                end = time.time()
+                print(str(iterations) + " iteracji, zajęło " + str(end - start) + " sekund")
+                return [0]
+        end = time.time()
+        print(str(iterations) + "iteracji, zajęło " + str(end-start) + " sekund")
+        return r
+
+    def gaussSiedel(self):
+        r = [1] * self.N
+        d = self.matDiagonal()
+        l = self.matTrLower()
+        u = self.matTrUpper()
+
+        dl = d.matAddMat(l)
+        dlb = dl.forwardSub(b)
+        minusDL = dl.matMulScalar(-1)
+
+        res = self.normedRes(r, b)
+        errorRes = res ** 30
+        maxRes = 10 ** -9
+        iterations = 0
+        start = time.time()
+        while res > maxRes:
+            iterations += 1
+            ur = u.matMulVec(r)
+            dlur = minusDL.forwardSub(ur)
+
+            r = dlur + dlb
+            res = self.normedRes(r, b)
+            if res >= errorRes:
+                print("Norma bledu rezydualnego prawdopodobnie nie zbiega")
+                end = time.time()
+                print(str(iterations) + " iteracji, zajęło " + str(end - start) + " sekund")
+                return [0]
+        end = time.time()
+        print(str(iterations) + "iteracji, zajęło " + str(end - start) + " sekund")
+        return r
 
     def matPrint(self):
         for row in range(self.N):
