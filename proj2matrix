@@ -2,6 +2,10 @@ import math
 import time
 
 
+def add2Vectors(a, b):
+    return [x + y for x, y in zip(a, b)]
+
+
 class SquareMatrix:
     def __init__(self, size):
         self.N = size
@@ -38,7 +42,7 @@ class SquareMatrix:
         for row in range(self.N):
             newMat.mat.append([])
             for col in range(self.N):
-                if row > col:
+                if row >= col:
                     newMat.mat[row].append(0)
                 else:
                     newMat.mat[row].append(self.mat[row][col])
@@ -49,7 +53,7 @@ class SquareMatrix:
         for row in range(self.N):
             newMat.mat.append([])
             for col in range(self.N):
-                if row < col:
+                if row <= col:
                     newMat.mat[row].append(0)
                 else:
                     newMat.mat[row].append(self.mat[row][col])
@@ -83,6 +87,20 @@ class SquareMatrix:
         res = [x - y for x, y in zip(self.matMulVec(r), b)]
         return self.norm(res)
 
+    def direct(self, b):
+        return self.forwardSub(b)
+
+    def residualErrorTooBig(self, iterations, start, res):
+        print("not acceptable error - terminated, with res = " + str(res))
+        end = time.time()
+        print(str(iterations) + " iteracji, zajęło " + str(end - start) + " sekund")
+        
+    def residualErrorRising(self, iterations, start):
+        print("Norma bledu rezydualnego prawdopodobnie nie zbiegnie")
+        end = time.time()
+        print(str(iterations) + " iteracji, zajęło " + str(end - start) + " sekund")
+
+
     def jacobi(self, b):
         r = [1] * self.N
         d = self.matDiagonal()
@@ -97,24 +115,23 @@ class SquareMatrix:
         maxRes = 10 ** -9  # pow(10, -9)
         iterations = 0
         start = time.time()
+        resarr = []
         while res > maxRes:
+            #   print("res: " + str(res) + "  ||  maxRes: " + str(maxRes))
             iterations += 1
             lur = lu.matMulVec(r)
             dlur = minusD.forwardSub(lur)
-            #dlur = d.forwardSub(lur)
-            #dlur = [x * -1 for x in dlur]
-            r = dlur + db
+            r = add2Vectors(dlur, db)
             res = self.normedRes(r, b)
+            resarr.append(res)
             if res >= errorRes:
-                print("Norma bledu rezydualnego prawdopodobnie nie zbiega")
-                end = time.time()
-                print(str(iterations) + " iteracji, zajęło " + str(end - start) + " sekund")
+                self.residualErrorRising(iterations, start)
                 return [0]
         end = time.time()
-        print(str(iterations) + "iteracji, zajęło " + str(end-start) + " sekund")
+        print(str(iterations) + "iteracji, zajęło " + str(end - start) + " sekund")
         return r
 
-    def gaussSiedel(self):
+    def gaussSiedel(self, b):
         r = [1] * self.N
         d = self.matDiagonal()
         l = self.matTrLower()
@@ -125,22 +142,31 @@ class SquareMatrix:
         minusDL = dl.matMulScalar(-1)
 
         res = self.normedRes(r, b)
+        resLast = res
         errorRes = res ** 30
         maxRes = 10 ** -9
         iterations = 0
+        terminationCountdown = 0
         start = time.time()
         while res > maxRes:
             iterations += 1
             ur = u.matMulVec(r)
             dlur = minusDL.forwardSub(ur)
 
-            r = dlur + dlb
+            r = add2Vectors(dlur, dlb)
             res = self.normedRes(r, b)
+            if resLast == res:
+                terminationCountdown += 1
+                if terminationCountdown == 200:
+                    self.residualErrorTooBig(iterations, start)                 
+                    return [0]
+            else:
+                terminationCountdown = 0
+            resLast = res
             if res >= errorRes:
-                print("Norma bledu rezydualnego prawdopodobnie nie zbiega")
-                end = time.time()
-                print(str(iterations) + " iteracji, zajęło " + str(end - start) + " sekund")
+                self.residualErrorRising(iterations, start)
                 return [0]
+            
         end = time.time()
         print(str(iterations) + "iteracji, zajęło " + str(end - start) + " sekund")
         return r
@@ -155,10 +181,7 @@ class SquareMatrix:
             for col in range(self.N):
                 self.mat[row].append(3)
 
-    def matBandCreate(self):
-        a1 = 5 + 7
-        a2 = -1
-        a3 = -1
+    def matBandCreate(self, a1, a2, a3):
         start = 2
         current = start
         band = [a3, a2, a1, a2, a3]
@@ -186,43 +209,21 @@ class SquareMatrix:
 
 
 N = 9 * 2 * 5
-#
-# s = SquareMatrix(N)
-# s.matBandCreate()
-# s.matPrint()
-# d = SquareMatrix(N)
-# d.matBandCreate()
-# s = s.matAddMat(d)
-# s.matPrint()
-# test = SquareMatrix(N)
-#
-# test.matTestCreate()
-# test = test.matTrUpper()
-# test.matPrint()
-
-# test.matTestCreate()test.matPrint()
-# test.matPrint()
-
-# test = test.matTrLower()
-# test = test.matDiagonal()
-# test.matPrint()
-
-# test = test.matAddMat(test)
-# test.matMulScalar(2)
-# test.matPrint()
-# tvec = []
-# for i in range(N):
-#     tvec.append(2)
-# test.jacobi(tvec)
-# v = test.forwardSub(tvec)
-# print(v)
-# v = test.matMulVec(tvec)
-# print(v)
 
 b = []
 for i in range(N):
     b.append(math.sin(i * (8 + 1)))
+print(b)
 m = SquareMatrix(N)
-m.matBandCreate()
-m.jacobi(b)
+m.matBandCreate(12, -1, -1)
+r1 = m.direct(b)
+print("Wynik bezpośredni: " + str(r1) + "\n")
+
+r2 = m.jacobi(b)
+print("Wynik Jacobi: " + str(r2) + "\n")
+
+r3 = m.gaussSiedel(b)
+print("Wynik Gauss-Seidel: " + str(r3) + "\n")
+
+m.matBandCreate(3, -1, -1)
 # print(b)
