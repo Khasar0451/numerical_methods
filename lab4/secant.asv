@@ -1,0 +1,32 @@
+function [xvect,xdif,fx,it_cnt] = secant(a,b,eps,fun)
+% fun - funkcja, ktorej miejsce zerowe bedzie poszukiwane
+% [a,b] - przedzial poszukiwania miejsca zerowego
+% eps - prog dokladnosci obliczen
+% 
+% xvect - wektor kolejnych wartosci przyblizonego rozwiazania
+% xdif - wektor roznic pomiedzy kolejnymi wartosciami przyblizonego rozwiazania
+% fx - wektor wartosci funkcji dla kolejnych elementow wektora xvect
+% it_cnt - liczba iteracji wykonanych przy poszukiwaniu miejsca zerowego
+
+
+
+it_cnt = 0;
+xvect(1) = a;
+xvect(2) = b;
+for i = 3:1000
+    it_cnt = it_cnt + 1;
+    xvect(i-1) = xk;
+    xvect(i-2) = xkm1;
+    c = xk - ( fun(xk) * (xk - xkm1) )
+    xvect(i) = c;
+    xdif(i) = abs(c - xvect(i - 1));
+    
+    fc = fun(c); % wartosci funkcji fun dla wartosci c
+    fx(i) = fc;
+
+    if abs(fc) < eps || abs(b - a) < eps 
+        return 
+
+end
+end
+
