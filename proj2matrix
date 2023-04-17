@@ -94,12 +94,11 @@ class SquareMatrix:
         print("not acceptable error - terminated, with res = " + str(res))
         end = time.time()
         print(str(iterations) + " iteracji, zajęło " + str(end - start) + " sekund")
-        
+
     def residualErrorRising(self, iterations, start):
         print("Norma bledu rezydualnego prawdopodobnie nie zbiegnie")
         end = time.time()
         print(str(iterations) + " iteracji, zajęło " + str(end - start) + " sekund")
-
 
     def jacobi(self, b):
         r = [1] * self.N
@@ -158,7 +157,7 @@ class SquareMatrix:
             if resLast == res:
                 terminationCountdown += 1
                 if terminationCountdown == 200:
-                    self.residualErrorTooBig(iterations, start)                 
+                    self.residualErrorTooBig(iterations, start, res)
                     return [0]
             else:
                 terminationCountdown = 0
@@ -166,10 +165,18 @@ class SquareMatrix:
             if res >= errorRes:
                 self.residualErrorRising(iterations, start)
                 return [0]
-            
+
         end = time.time()
         print(str(iterations) + "iteracji, zajęło " + str(end - start) + " sekund")
         return r
+
+    def LUFactorization(self, b):
+        l = self.matTrLower()
+        u = self.matTrUpper()
+
+        for i in range(self.N):
+            for k in range(i, self.N):
+                sum = 0
 
     def matPrint(self):
         for row in range(self.N):
@@ -210,14 +217,20 @@ class SquareMatrix:
 
 N = 9 * 2 * 5
 
+for j in range(5, 9):
+    print(j)
+
 b = []
 for i in range(N):
     b.append(math.sin(i * (8 + 1)))
 print(b)
 m = SquareMatrix(N)
-m.matBandCreate(12, -1, -1)
-r1 = m.direct(b)
-print("Wynik bezpośredni: " + str(r1) + "\n")
+m.matBandCreate(3, -1, -1)
+
+# m.matBandCreate(12, -1, -1)
+
+# r1 = m.direct(b)
+# print("Wynik bezpośredni: " + str(r1) + "\n")
 
 r2 = m.jacobi(b)
 print("Wynik Jacobi: " + str(r2) + "\n")
