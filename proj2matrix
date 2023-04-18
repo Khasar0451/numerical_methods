@@ -87,6 +87,29 @@ class SquareMatrix:
             x[row] = (b[row] - aSum) / self.mat[row][row]
         return x
 
+    def backSub(self, b):
+        x = [0] * self.N
+        for row in range(self.N):
+            aSum = 0
+            for col in range(self.N - row):  # +1 ?
+                aSum += self.mat[row][col] * x[col]
+            x[row] = (b[row] - aSum) / self.mat[row][row]
+        return x
+
+    def LU(self, b):
+        l = SquareMatrix(self.N)
+        l.matBandCreate(1, 0, 0)
+        l = l.mat
+        u = self.mat
+
+        for k in range(self.M):
+            for j in range(k, self.N):
+                l[j][k] = u[j][k] / u[k][k]
+
+        for i in range(self.N):
+            for k in range(i, self.N):
+                sum = 0
+
     def norm(self, vec):
         suma = sum(x ** 2 for x in vec)
         return math.sqrt(suma)
@@ -262,15 +285,8 @@ class SquareMatrix:
         return r
 
     def LUFactorization(self, b):
-        l = SquareMatrix(self.N)
-        l.matBandCreate(1,0,0)
-        l = l.mat
-        u = self.mat
-
-        for k in range(self.N):     #0, -1, -2?
-            for j in range(k, self.N):      #+1?
-                l[j][k] = u[j][k]/u[k][k]
-
+        l = self.matTrLower()
+        u = self.matTrUpper()
 
         for i in range(self.N):
             for k in range(i, self.N):
@@ -308,6 +324,9 @@ class SquareMatrix:
             if start > 0:
                 start -= 1
             current = start
+
+
+# czasem macierz jest 2x wieksza (puste elementy)
 
 
 N = 5  # 9 * 2 * 5
