@@ -17,8 +17,12 @@ class SquareMatrix:
 
     def matAddMat(self, mat2: 'SquareMatrix') -> 'SquareMatrix':  # '  ' -> forward reference, class doesn't exist yet
         newMat = SquareMatrix(self.N)
-        for row in range(self.N):
-            newMat.mat[row] += ([sum(val) for val in zip(self.mat[row], mat2.mat[row])])
+        for i in range(self.N):
+            row = []
+            for j in range(self.N):
+                row.append(self.mat[i][j] + mat2.mat[i][j])
+            newMat.mat[i] = row
+            # newMat.mat[row] += ([sum(val) for val in zip(self.mat[row], mat2.mat[row])])
             # self.mat[row] = ([sum(val) for val in zip(self.mat[row], mat2.mat[row])])
         return newMat
 
@@ -111,21 +115,41 @@ class SquareMatrix:
 
         res = self.normedRes(r, b)
         errorRes = res ** 30
-        maxRes = 10 ** -9  # pow(10, -9)
+        maxRes = pow(10, -9)
         iterations = 0
         start = time.time()
+        terminationCountdown = 0
+        resLast = res
         resarr = []
+        #dlu = minusD.forwardSub(lu.mat)
         while res > maxRes:
             #   print("res: " + str(res) + "  ||  maxRes: " + str(maxRes))
             iterations += 1
+
+
+            ###w drugiej itracji lur jest inny niz w matlab
+
+
             lur = lu.matMulVec(r)
             dlur = minusD.forwardSub(lur)
+            #dlur = minusD.forwardSub(lu.mat)
+            #dlur = dlu.matMulVec(r)
             r = add2Vectors(dlur, db)
             res = self.normedRes(r, b)
             resarr.append(res)
             if res >= errorRes:
                 self.residualErrorRising(iterations, start)
                 return [0]
+
+            if resLast == res:
+                terminationCountdown += 1
+                if terminationCountdown == 200:
+                    self.residualErrorTooBig(iterations, start, res)
+                    return [0]
+            else:
+                terminationCountdown = 0
+            resLast = res
+
         end = time.time()
         print(str(iterations) + "iteracji, zajęło " + str(end - start) + " sekund")
         return r
@@ -215,19 +239,20 @@ class SquareMatrix:
 # czasem macierz jest 2x wieksza (puste elementy)
 
 
-N = 9 * 2 * 5
+N = 5 #9 * 2 * 5
 
 for j in range(5, 9):
     print(j)
 
 b = []
 for i in range(N):
-    b.append(math.sin(i * (8 + 1)))
+    b.append((i+2))
+#     b.append(math.sin(i * (8 + 1)))
 print(b)
 m = SquareMatrix(N)
-m.matBandCreate(3, -1, -1)
+#m.matBandCreate(3, -1, -1)
 
-# m.matBandCreate(12, -1, -1)
+m.matBandCreate(12, -1, -1)
 
 # r1 = m.direct(b)
 # print("Wynik bezpośredni: " + str(r1) + "\n")
