@@ -6,6 +6,10 @@ def add2Vectors(a, b):
     return [x + y for x, y in zip(a, b)]
 
 
+def sub2Vectors(a, b):
+    return [x - y for x, y in zip(a, b)]
+
+
 class SquareMatrix:
     def __init__(self, size):
         self.N = size
@@ -31,7 +35,7 @@ class SquareMatrix:
         for row in range(self.N):
             num = 0
             for col in range(self.N):
-                num += self.mat[row][col] * vec[row]
+                num += self.mat[row][col] * vec[col]
             newVec.append(num)
         return newVec
 
@@ -88,7 +92,27 @@ class SquareMatrix:
         return math.sqrt(suma)
 
     def normedRes(self, r, b):
-        res = [x - y for x, y in zip(self.matMulVec(r), b)]
+        res = []
+
+        print("m: ")
+        for row in self.mat:
+            print(*row, sep="\t")
+        print()
+
+        mr = self.matMulVec(r)
+        print("mr: ")
+        for row in mr:
+            print(row, sep="\t")
+        print()
+        res = sub2Vectors(mr, b)
+        # for i in range(self.N):
+        #     res.append(x - b[row])
+        # res = [x - y for x, y in zip(self.matMulVec(r), b)]
+        print("unnormed res: ")
+        for row in res:
+            print(row, sep="\t")
+        print()
+
         return self.norm(res)
 
     def direct(self, b):
@@ -106,14 +130,35 @@ class SquareMatrix:
 
     def jacobi(self, b):
         r = [1] * self.N
+        print("r: ")
+        for row in r:
+            print(row, sep="\t")
+        print()
+
         d = self.matDiagonal()
         l = self.matTrLower()
         u = self.matTrUpper()
         lu = l.matAddMat(u)
+        print("lu: ")
+        for row in lu.mat:
+            print(*row, sep="\t")
+        print()
+        # print('\n'.join(' '.join(str(x) for x in row) for row in lu.mat))
+        # print(lu.mat)
         minusD = d.matMulScalar(-1)
+
         db = d.forwardSub(b)
+        print("db: ")
+        for row in db:
+            print(row, sep="\t")
+        print()
+
+        #
 
         res = self.normedRes(r, b)
+        print("res: " + str(res))
+        print()
+
         errorRes = res ** 30
         maxRes = pow(10, -9)
         iterations = 0
@@ -121,21 +166,42 @@ class SquareMatrix:
         terminationCountdown = 0
         resLast = res
         resarr = []
-        #dlu = minusD.forwardSub(lu.mat)
+        # dlu = minusD.forwardSub(lu.mat)
         while res > maxRes:
             #   print("res: " + str(res) + "  ||  maxRes: " + str(maxRes))
             iterations += 1
 
-
             ###w drugiej itracji lur jest inny niz w matlab
 
-
             lur = lu.matMulVec(r)
+            print("lur : ")
+            for row in lur:
+                print(row, sep="\t")
+            print()
+
             dlur = minusD.forwardSub(lur)
-            #dlur = minusD.forwardSub(lu.mat)
-            #dlur = dlu.matMulVec(r)
+            print("dlur : ")
+            for row in dlur:
+                print(row, sep="\t")
+            print()
+
+            # dlur = minusD.forwardSub(lu.mat)
+            # dlur = dlu.matMulVec(r)
+
             r = add2Vectors(dlur, db)
+            print("r: ")
+            for row in r:
+                print(row, sep="\t")
+            print()
+
+            print("b: ")
+            for row in b:
+                print(row, sep="\t")
+
             res = self.normedRes(r, b)
+            print("res: " + str(res))
+            print()
+
             resarr.append(res)
             if res >= errorRes:
                 self.residualErrorRising(iterations, start)
@@ -149,6 +215,7 @@ class SquareMatrix:
             else:
                 terminationCountdown = 0
             resLast = res
+            print("____________________________")
 
         end = time.time()
         print(str(iterations) + "iteracji, zajęło " + str(end - start) + " sekund")
@@ -239,18 +306,15 @@ class SquareMatrix:
 # czasem macierz jest 2x wieksza (puste elementy)
 
 
-N = 5 #9 * 2 * 5
-
-for j in range(5, 9):
-    print(j)
+N = 5  # 9 * 2 * 5
 
 b = []
 for i in range(N):
-    b.append((i+2))
+    b.append((i + 2))
 #     b.append(math.sin(i * (8 + 1)))
 print(b)
 m = SquareMatrix(N)
-#m.matBandCreate(3, -1, -1)
+# m.matBandCreate(3, -1, -1)
 
 m.matBandCreate(12, -1, -1)
 
