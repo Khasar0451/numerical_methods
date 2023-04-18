@@ -262,8 +262,15 @@ class SquareMatrix:
         return r
 
     def LUFactorization(self, b):
-        l = self.matTrLower()
-        u = self.matTrUpper()
+        l = SquareMatrix(self.N)
+        l.matBandCreate(1,0,0)
+        l = l.mat
+        u = self.mat
+
+        for k in range(self.N):     #0, -1, -2?
+            for j in range(k, self.N):      #+1?
+                l[j][k] = u[j][k]/u[k][k]
+
 
         for i in range(self.N):
             for k in range(i, self.N):
@@ -301,9 +308,6 @@ class SquareMatrix:
             if start > 0:
                 start -= 1
             current = start
-
-
-# czasem macierz jest 2x wieksza (puste elementy)
 
 
 N = 5  # 9 * 2 * 5
