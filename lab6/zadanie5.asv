@@ -1,0 +1,35 @@
+clc
+clear all
+close all
+
+warning('off','all')
+
+load trajektoria2
+
+N = 60;
+xa = aproksymacjaWielomianowa(n, x, N);  % aproksymacja wspolrzednej x
+ya = aproksymacjaWielomianowa(n, y, N);  
+za = aproksymacjaWielomianowa(n, z, N);  
+
+plot3(x,y,z,'o')
+grid on
+axis equal
+print -dpng zadanie5a.png;
+
+maxN = 71;
+for N = 1:maxN
+    xa = aproksymacjaWielomianowa(n, x, N);  % aproksymacja wspolrzednej x
+    ya = aproksymacjaWielomianowa(n, y, N);  
+    za = aproksymacjaWielomianowa(n, z, N);  
+    errx = sqrt(sum((x - xa).^2))/M;
+    erry = sqrt(sum((y - ya).^2))/M;
+    errz = sqrt(sum((z - za).^2))/M;
+    err(N) = errx + erry + errz;
+end
+plot(err,maxN,'o')
+grid on
+axis equal
+
+xlabel("Rząd aproksymacji")
+ylabel("Wartość błędu ")
+print -dpng zadanie5b.png;

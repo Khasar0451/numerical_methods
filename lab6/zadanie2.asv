@@ -1,0 +1,18 @@
+clc
+clear all
+close all
+
+warning('off','all')
+
+load trajektoria1
+
+plot3(x,y,z,'o')
+grid on
+axis equal
+N = 60;
+xa = aproksymacjaWielomianowa(n, x, N);  % aproksymacja wspolrzednej x
+ya = aproksymacjaWielomianowa(n, y, N);  
+za = aproksymacjaWielomianowa(n, z, N);  
+
+plot3(x,y,z,'o')
+plot3(_,_,_,'g','lineWidth',4)
