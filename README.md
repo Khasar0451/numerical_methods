@@ -1,1 +1,1 @@
-Project made for laboratory classes in the subject of Numerical Methods. Parts of the code were provided by teacher.
+Bigger projects (proj) made from scratch and smaller laboratories (lab) made during classes with parts of code provided by teacher.
